@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/test-hemisphere/vite.svg" />
+    <title>Test de Hemisferio Cerebral</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/test-hemisphere/assets/index-Dtx1BKOw.js"></script>
+    <link rel="stylesheet" crossorigin href="/test-hemisphere/assets/index-BG6Ih7Qq.css">
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="container">
+        <h1 class="title">¿Qué Hemisferio Predomina en Ti?</h1>
+
+        <div class="container">
+          <div id="quiz-container"></div>
+        </div>
+
+        <div class="nav-buttons" id="nav-buttons" style="display: none">
+          <button class="button-nav" onclick="restartQuiz()">
+            Reiniciar Test
+          </button>
+        </div>
+        <div class="content-wrapper">
+          <div class="left-panel">
+            <canvas id="bg"></canvas>
+          </div>
+
+          <div class="right-panel" id="right-panel"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
