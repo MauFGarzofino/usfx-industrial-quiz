@@ -2,5 +2,5 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: { outDir: 'build' },
-    base: process.env.VITE_BASE_PATH || ""
+    base: process.env.VITE_BASE_PATH || "usfx-industrial-quiz"
 });
