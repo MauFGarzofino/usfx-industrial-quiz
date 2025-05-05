@@ -182,7 +182,7 @@ function createSaveResultsForm(leftPercentage, rightPercentage) {
       <div class="input-error-message" id="error-phone">Debe tener 8 dígitos.</div>
     </label>
 
-    <label>Puntaje del juego físico:
+    <label>Puntaje del juego:
       <input type="number" id="form-score" />
       <div class="input-error-message" id="error-score">Debe ser un número entre 1 y 100.</div>
     </label>
@@ -211,11 +211,16 @@ function createSaveResultsForm(leftPercentage, rightPercentage) {
     }
   });
 }
+
 async function submitResults(left, right, description) {
   const nameInput = document.getElementById('form-name');
   const emailInput = document.getElementById('form-email');
   const phoneInput = document.getElementById('form-phone');
   const scoreInput = document.getElementById('form-score');
+  const submitButton = document.getElementById('submit-results');
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Enviando...";
 
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
@@ -261,7 +266,11 @@ async function submitResults(left, right, description) {
     hasError = true;
   }
 
-  if (hasError) return;
+  if (hasError) {
+    submitButton.disabled = false;
+    submitButton.textContent = "Enviar";
+    return;
+  }
 
   const data = {
     name,
@@ -279,9 +288,10 @@ async function submitResults(left, right, description) {
     closeModal();
   } catch (error) {
     alert("Error al guardar: " + error.message);
+    submitButton.disabled = false;
+    submitButton.textContent = "Enviar";
   }
 }
-
 
 function closeModal() {
   const modal = document.querySelector('.results-modal');
