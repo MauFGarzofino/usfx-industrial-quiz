@@ -2,5 +2,5 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: { outDir: 'build' },
-    base: '/test-hemisphere/',
+    base: '/usfx-industrial-quiz/',
 });

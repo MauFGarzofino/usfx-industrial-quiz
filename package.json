@@ -1,4 +1,5 @@
 {
+  "homepage": "https://maufgarzofino.github.io/usfx-industrial-quiz/",
   "name": "test-hemisferios",
   "private": true,
   "version": "0.0.0",
@@ -15,6 +16,7 @@
     "vite": "^6.3.1"
   },
   "dependencies": {
+    "firebase": "^11.6.1",
     "three": "^0.176.0"
   }
 }
