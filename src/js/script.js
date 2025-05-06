@@ -173,7 +173,7 @@ function createSaveResultsForm(leftPercentage, rightPercentage) {
     </label>
 
   <label>Correo electrónico (opcional):
-   <input type="email" id="form-email" />  <!-- Quitamos el required -->
+   <input type="email" id="form-email" />
    <div class="input-error-message" id="error-email">
      Si lo proporciona, debe ser un formato de correo válido.
     </div>

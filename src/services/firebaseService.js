@@ -17,8 +17,8 @@ const db = getFirestore(app);
 export async function saveUserResult(data) {
     try {
         await addDoc(collection(db, "results"), data);
-        console.log("✅ Resultado guardado en Firebase");
+        console.log("Resultado guardado en Firebase");
     } catch (error) {
-        console.error("❌ Error al guardar resultado:", error);
+        console.error("Error al guardar resultado:", error);
     }
 }
