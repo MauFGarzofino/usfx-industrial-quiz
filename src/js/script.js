@@ -172,10 +172,12 @@ function createSaveResultsForm(leftPercentage, rightPercentage) {
       <div class="input-error-message" id="error-name">Este campo es obligatorio.</div>
     </label>
 
-    <label>Correo electrónico:
-      <input type="email" id="form-email" required />
-      <div class="input-error-message" id="error-email">Formato de correo no válido.</div>
-    </label>
+  <label>Correo electrónico (opcional):
+   <input type="email" id="form-email" />  <!-- Quitamos el required -->
+   <div class="input-error-message" id="error-email">
+     Si lo proporciona, debe ser un formato de correo válido.
+    </div>
+  </label>
 
     <label>Celular:
       <input type="text" id="form-phone" required />
@@ -212,84 +214,125 @@ function createSaveResultsForm(leftPercentage, rightPercentage) {
   });
 }
 
-async function submitResults(left, right, description) {
-  const nameInput = document.getElementById('form-name');
-  const emailInput = document.getElementById('form-email');
-  const phoneInput = document.getElementById('form-phone');
-  const scoreInput = document.getElementById('form-score');
-  const submitButton = document.getElementById('submit-results');
+const FORM_CONFIG = {
+  fields: {
+    name: {
+      id: 'form-name',
+      errorId: 'error-name',
+      validation: value => !!value.trim()
+    },
+    email: {
+      id: 'form-email',
+      errorId: 'error-email',
+      validation: value => {
+        const trimmedValue = value.trim();
+        if (trimmedValue === "") return true;
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        return emailRegex.test(trimmedValue);
+      }
+    },
+    phone: {
+      id: 'form-phone',
+      errorId: 'error-phone',
+      validation: value => /^[0-9]{8,}$/.test(value.trim())
+    },
+    score: {
+      id: 'form-score',
+      errorId: 'error-score',
+      validation: value => {
+        const trimmed = value.trim();
+        if (trimmed === "") return true;
+        const score = parseInt(trimmed, 10);
+        return !isNaN(score) && score >= 1 && score <= 100;
+      }
+    }
+  },
+  submitButtonId: 'submit-results'
+};
 
-  submitButton.disabled = true;
-  submitButton.textContent = "Enviando...";
+function getDOMReferences() {
+  const elements = {};
 
-  const name = nameInput.value.trim();
-  const email = emailInput.value.trim();
-  const phone = phoneInput.value.trim();
-  const scoreRaw = scoreInput.value.trim();
-
-  const inputs = [nameInput, emailInput, phoneInput, scoreInput];
-  inputs.forEach(input => input.classList.remove('invalid'));
-
-  const errorMessages = {
-    name: document.getElementById('error-name'),
-    email: document.getElementById('error-email'),
-    phone: document.getElementById('error-phone'),
-    score: document.getElementById('error-score'),
-  };
-  Object.values(errorMessages).forEach(msg => (msg.style.display = 'none'));
-
-  let hasError = false;
-
-  if (!name) {
-    nameInput.classList.add('invalid');
-    errorMessages.name.style.display = 'block';
-    hasError = true;
+  for (const [field, config] of Object.entries(FORM_CONFIG.fields)) {
+    elements[field] = {
+      input: document.getElementById(config.id),
+      error: document.getElementById(config.errorId)
+    };
   }
 
-  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  if (!email || !emailRegex.test(email)) {
-    emailInput.classList.add('invalid');
-    errorMessages.email.style.display = 'block';
-    hasError = true;
+  elements.submitButton = document.getElementById(FORM_CONFIG.submitButtonId);
+
+  return elements;
+}
+
+function resetFormValidation(elements) {
+  for (const { input, error } of Object.values(elements)) {
+    if (input) input.classList.remove('invalid');
+    if (error) error.style.display = 'none';
+  }
+}
+
+function validateForm(elements) {
+  let isValid = true;
+
+  for (const [field, { input, error }] of Object.entries(elements)) {
+    if (field === 'submitButton') continue;
+
+    const config = FORM_CONFIG.fields[field];
+    const value = input.value;
+
+    if (!config.validation(value)) {
+      input.classList.add('invalid');
+      error.style.display = 'block';
+      isValid = false;
+    }
   }
 
-  if (!/^[0-9]{8,}$/.test(phone)) {
-    phoneInput.classList.add('invalid');
-    errorMessages.phone.style.display = 'block';
-    hasError = true;
-  }
+  return isValid;
+}
 
-  const score = parseInt(scoreRaw, 10);
-  if (scoreRaw !== "" && (isNaN(score) || score < 1 || score > 100)) {
-    scoreInput.classList.add('invalid');
-    errorMessages.score.style.display = 'block';
-    hasError = true;
-  }
+function setSubmitButtonState(button, isSubmitting) {
+  button.disabled = isSubmitting;
+  button.textContent = isSubmitting ? "Enviando..." : "Enviar";
+}
 
-  if (hasError) {
-    submitButton.disabled = false;
-    submitButton.textContent = "Enviar";
-    return;
-  }
+function prepareFormData(elements, left, right) {
+  const scoreValue = elements.score.input.value.trim();
+  const score = scoreValue === "" ? null : parseInt(scoreValue, 10);
 
-  const data = {
-    name,
-    email,
-    phone,
+  return {
+    name: elements.name.input.value.trim(),
+    email: elements.email.input.value.trim(),
+    phone: elements.phone.input.value.trim(),
     score: isNaN(score) ? null : score,
     leftPercentage: left,
     rightPercentage: right,
     timestamp: new Date()
   };
+}
+
+async function submitResults(left, right, description) {
+  const elements = getDOMReferences();
+
+  if (!elements.submitButton) return;
+
+  setSubmitButtonState(elements.submitButton, true);
+  resetFormValidation(elements);
+
+  if (!validateForm(elements)) {
+    setSubmitButtonState(elements.submitButton, false);
+    return;
+  }
+
+  const formData = prepareFormData(elements, left, right);
 
   try {
-    await saveUserResult(data);
+    await saveUserResult(formData);
     alert("Resultado guardado correctamente.");
     closeModal();
   } catch (error) {
     alert("Error al guardar: " + error.message);
-    submitButton.disabled = false;
-    submitButton.textContent = "Enviar";
+    setSubmitButtonState(elements.submitButton, false);
   }
 }
 
