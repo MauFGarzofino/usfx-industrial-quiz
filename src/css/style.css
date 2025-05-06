@@ -318,6 +318,19 @@ canvas {
   }
 }
 
+@media (max-width: 480px) {
+  .option {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+
+  .circle {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+  }
+}
+
 #counter {
   margin-top: 1.5rem;
   font-size: 0.9rem;
@@ -403,6 +416,8 @@ canvas {
   font-weight: bold;
   color: #fff;
 }
+
+
 
 .card-footer {
   margin-top: 2rem;
